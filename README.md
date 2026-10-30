@@ -51,3 +51,4 @@ docker run --rm -e GEMINI_API_KEY=your_key optibot-sync
 ## 5. Sanity Check Screenshot
 
 ![OptiBot Sanity Check Screenshot](docs/sanity-check.png)
+
