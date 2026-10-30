@@ -1,0 +1,40 @@
+name: Daily Knowledge Base Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Chạy 00:00 UTC mỗi ngày
+  workflow_dispatch:      # Cho phép kích hoạt thủ công từ GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Lint and Format Check with Ruff
+        run: |
+          pip install ruff
+          ruff check .
+          ruff format --check .
+
+      - name: Cache Sync State Database
+        uses: actions/cache@v4
+        with:
+          path: sync_state.db
+          key: sync-db-${{ github.run_id }}
+          restore-keys: |
+            sync-db-
+
+      - name: Build Docker Image
+        run: docker build -t optibot-sync:latest .
+
+      - name: Run Daily Sync Container
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: docker run --rm -e GEMINI_API_KEY=$GEMINI_API_KEY optibot-sync:latest

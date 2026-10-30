@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Testing & Linting
+.pytest_cache/
+.ruff_cache/
+
+# Local Data & State
+.env
+sync_state.db
+chroma_db/
+docs/
+
+# IDE
+.idea/
+.vscode/
