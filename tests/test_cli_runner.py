@@ -28,4 +28,3 @@ def test_format_terminal_box_structure():
     lines = box.strip().splitlines()
     assert lines[0].startswith("+")
     assert lines[-1].startswith("+")
-

@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Any, Dict, List
+from typing import Any
 
 import markdownify
 import requests
@@ -26,9 +26,9 @@ def clean_html_to_markdown(html_content: str) -> str:
     return md_clean
 
 
-def fetch_zendesk_articles(min_count: int = 30, docs_dir: str = "docs") -> List[Dict[str, Any]]:
+def fetch_zendesk_articles(min_count: int = 30, docs_dir: str = "docs") -> list[dict[str, Any]]:
     os.makedirs(docs_dir, exist_ok=True)
-    articles: List[Dict[str, Any]] = []
+    articles: list[dict[str, Any]] = []
     url = f"{BASE_API_URL}?per_page=100"
 
     headers = {"User-Agent": "OptiBot-Collector/1.0"}
@@ -80,14 +80,16 @@ def fetch_zendesk_articles(min_count: int = 30, docs_dir: str = "docs") -> List[
                     file_path = os.path.join(docs_dir, f"{slug}.md")
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.write(f"# {item['title']}\n\nSource: {item['html_url']}\n\n{body_md}\n")
-                    articles.append({
-                        "id": item["id"],
-                        "title": item["title"],
-                        "slug": slug,
-                        "url": item["html_url"],
-                        "body_md": body_md,
-                        "file_path": file_path,
-                    })
+                    articles.append(
+                        {
+                            "id": item["id"],
+                            "title": item["title"],
+                            "slug": slug,
+                            "url": item["html_url"],
+                            "body_md": body_md,
+                            "file_path": file_path,
+                        }
+                    )
         except Exception:
             pass
 

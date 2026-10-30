@@ -12,7 +12,11 @@ SYSTEM_PROMPT = """You are OptiBot, the customer-support bot for OptiSigns.com.
 
 
 class OptiBotAssistant:
-    def __init__(self, vector_store: VectorStoreManager = None, api_key: str = None):
+    def __init__(
+        self,
+        vector_store: VectorStoreManager | None = None,
+        api_key: str | None = None,
+    ):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
         self.vector_store = vector_store or VectorStoreManager(api_key=self.api_key)
@@ -45,14 +49,18 @@ Provide the answer following the rules in your system instructions strictly.
 Always include the Article URL lines at the bottom."""
 
         models_to_try = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"]
-        last_error = None
+        last_error: Exception | None = None
         for model_name in models_to_try:
             try:
                 response = self.client.models.generate_content(
                     model=model_name, contents=prompt, config={"system_instruction": SYSTEM_PROMPT}
                 )
-                return response.text
+                if response and response.text:
+                    return response.text
             except Exception as e:
                 last_error = e
                 continue
-        raise last_error
+
+        if last_error is not None:
+            raise RuntimeError(f"All Gemini models failed: {last_error}") from last_error
+        raise RuntimeError("No model was able to generate a response.")

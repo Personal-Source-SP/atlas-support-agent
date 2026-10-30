@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 import chromadb
 from google import genai
@@ -9,8 +9,8 @@ EMBEDDING_MODEL = "gemini-embedding-001"
 
 
 def chunk_text(
-    article: Dict[str, Any], chunk_size: int = 1000, chunk_overlap: int = 150
-) -> List[Dict[str, Any]]:
+    article: dict[str, Any], chunk_size: int = 1000, chunk_overlap: int = 150
+) -> list[dict[str, Any]]:
     text = article.get("body_md", "")
     if not text:
         return []
@@ -40,7 +40,7 @@ def chunk_text(
 
 
 class VectorStoreManager:
-    def __init__(self, persist_dir: str = "chroma_db", api_key: str = None):
+    def __init__(self, persist_dir: str = "chroma_db", api_key: str | None = None):
         self.persist_dir = persist_dir
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
@@ -49,7 +49,7 @@ class VectorStoreManager:
             name="optisigns_support", metadata={"hnsw:space": "cosine"}
         )
 
-    def embed_texts(self, texts: List[str], batch_size: int = 15) -> List[List[float]]:
+    def embed_texts(self, texts: list[str], batch_size: int = 15) -> list[list[float]]:
         if not self.client:
             raise ValueError("GEMINI_API_KEY is not configured.")
         embeddings = []
@@ -74,8 +74,8 @@ class VectorStoreManager:
                         raise e
         return embeddings
 
-    def index_articles(self, articles: List[Dict[str, Any]]) -> Dict[str, int]:
-        all_chunks: List[Dict[str, Any]] = []
+    def index_articles(self, articles: list[dict[str, Any]]) -> dict[str, int]:
+        all_chunks: list[dict[str, Any]] = []
         for art in articles:
             all_chunks.extend(chunk_text(art))
         if not all_chunks:
@@ -89,7 +89,7 @@ class VectorStoreManager:
         self.collection.upsert(ids=ids, documents=texts, embeddings=embeddings, metadatas=metadatas)
         return {"files": len(articles), "chunks": len(all_chunks)}
 
-    def query(self, query_text: str, top_k: int = 3) -> List[Dict[str, Any]]:
+    def query(self, query_text: str, top_k: int = 3) -> list[dict[str, Any]]:
         if not self.client:
             raise ValueError("GEMINI_API_KEY is not configured.")
         res = self.client.models.embed_content(model=EMBEDDING_MODEL, contents=query_text)
@@ -97,4 +97,4 @@ class VectorStoreManager:
         results = self.collection.query(query_embeddings=[query_vector], n_results=top_k)
         docs = results["documents"][0] if results["documents"] else []
         metas = results["metadatas"][0] if results["metadatas"] else []
-        return [{"text": doc, "metadata": meta} for doc, meta in zip(docs, metas)]
+        return [{"text": doc, "metadata": meta} for doc, meta in zip(docs, metas, strict=False)]

@@ -1,6 +1,6 @@
 import hashlib
 import sqlite3
-from typing import Any, Dict, List
+from typing import Any
 
 
 class DeltaTracker:
@@ -35,8 +35,8 @@ class DeltaTracker:
     def compute_hash(text: str) -> str:
         return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
-    def classify_articles(self, articles: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
-        delta: Dict[str, List[Dict[str, Any]]] = {"added": [], "updated": [], "skipped": []}
+    def classify_articles(self, articles: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+        delta: dict[str, list[dict[str, Any]]] = {"added": [], "updated": [], "skipped": []}
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             for art in articles:
