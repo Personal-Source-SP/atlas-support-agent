@@ -1,10 +1,11 @@
 import os
+import time
 from typing import Any, Dict, List
 
 import chromadb
 from google import genai
 
-EMBEDDING_MODEL = "text-embedding-004"
+EMBEDDING_MODEL = "gemini-embedding-001"
 
 
 def chunk_text(
@@ -48,14 +49,29 @@ class VectorStoreManager:
             name="optisigns_support", metadata={"hnsw:space": "cosine"}
         )
 
-    def embed_texts(self, texts: List[str]) -> List[List[float]]:
+    def embed_texts(self, texts: List[str], batch_size: int = 15) -> List[List[float]]:
         if not self.client:
             raise ValueError("GEMINI_API_KEY is not configured.")
         embeddings = []
-        # Batch embedding requests
-        for text in texts:
-            res = self.client.models.embed_content(model=EMBEDDING_MODEL, contents=text)
-            embeddings.append(res.embedding.values)
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i : i + batch_size]
+            max_retries = 5
+            for attempt in range(max_retries):
+                try:
+                    res = self.client.models.embed_content(model=EMBEDDING_MODEL, contents=batch)
+                    embeddings.extend([e.values for e in res.embeddings])
+                    time.sleep(0.5)
+                    break
+                except Exception as e:
+                    if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                        wait_seconds = 15 * (attempt + 1)
+                        print(
+                            f"[THROTTLE] Rate limit reached. Backing off {wait_seconds}s "
+                            f"(attempt {attempt + 1}/{max_retries})..."
+                        )
+                        time.sleep(wait_seconds)
+                    else:
+                        raise e
         return embeddings
 
     def index_articles(self, articles: List[Dict[str, Any]]) -> Dict[str, int]:
@@ -77,7 +93,7 @@ class VectorStoreManager:
         if not self.client:
             raise ValueError("GEMINI_API_KEY is not configured.")
         res = self.client.models.embed_content(model=EMBEDDING_MODEL, contents=query_text)
-        query_vector = res.embedding.values
+        query_vector = res.embeddings[0].values
         results = self.collection.query(query_embeddings=[query_vector], n_results=top_k)
         docs = results["documents"][0] if results["documents"] else []
         metas = results["metadatas"][0] if results["metadatas"] else []

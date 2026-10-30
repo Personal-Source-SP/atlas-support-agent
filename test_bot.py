@@ -14,6 +14,12 @@ def parse_cli_args(args=None):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
+        "positional_query",
+        nargs="?",
+        default=None,
+        help="Optional positional question to ask OptiBot",
+    )
+    parser.add_argument(
         "--query",
         "-q",
         type=str,
@@ -39,7 +45,10 @@ def parse_cli_args(args=None):
         action="store_true",
         help="Start an interactive multi-turn terminal session",
     )
-    return parser.parse_args(args)
+    parsed = parser.parse_args(args)
+    if parsed.positional_query:
+        parsed.query = parsed.positional_query
+    return parsed
 
 
 def format_terminal_box(title: str, content: str, width: int = 80) -> str:

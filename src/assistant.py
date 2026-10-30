@@ -44,7 +44,15 @@ QUESTION:
 Provide the answer following the rules in your system instructions strictly.
 Always include the Article URL lines at the bottom."""
 
-        response = self.client.models.generate_content(
-            model="gemini-2.5-flash", contents=prompt, config={"system_instruction": SYSTEM_PROMPT}
-        )
-        return response.text
+        models_to_try = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"]
+        last_error = None
+        for model_name in models_to_try:
+            try:
+                response = self.client.models.generate_content(
+                    model=model_name, contents=prompt, config={"system_instruction": SYSTEM_PROMPT}
+                )
+                return response.text
+            except Exception as e:
+                last_error = e
+                continue
+        raise last_error
