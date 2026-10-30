@@ -25,6 +25,12 @@ python main.py
 ### Run Sanity Check (Ask OptiBot):
 ```bash
 python test_bot.py "How do I add a YouTube video?"
+
+# Interactive chat mode:
+python test_bot.py -i
+
+# Verbose inspection mode (inspect chunks & citations):
+python test_bot.py --verbose
 ```
 
 ### Code Quality & PEP 8 Check:
