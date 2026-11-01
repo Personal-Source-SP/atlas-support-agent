@@ -2,6 +2,10 @@
 
 An automated pipeline that scrapes technical documentation from Zendesk Help Center, detects content deltas using SQLite, embeds text into a ChromaDB Vector Store via Google Gemini API, and provides an AI Support Assistant with exact citations.
 
+> **Part 2 Assessment Delivery (Planning - Brief B)**:  
+> Detailed engineering plan, 4-question defense, PostgreSQL DDL, and live system audit:  
+> 👉 [**SCIO_SLICE_PLAN.md**](SCIO_SLICE_PLAN.md)
+
 ## 1. Local Setup
 
 Clone the repository and set up dependencies:
@@ -42,7 +46,7 @@ ruff format --check .
 ### Run with Docker:
 ```bash
 docker build -t optibot-sync .
-docker run --rm -e GEMINI_API_KEY=your_key optibot-sync
+docker run --rm -e API_KEY=your_key optibot-sync
 ```
 
 ## 3. Chunking & Embedding Strategy
@@ -52,7 +56,7 @@ docker run --rm -e GEMINI_API_KEY=your_key optibot-sync
 
 ## 4. Daily Job & Logs
 - Automated via GitHub Actions scheduled workflow (`.github/workflows/daily-sync.yml`).
-- **Public Workflow Run Logs**: [View Daily Job Execution Logs](https://github.com) *(Update with your repository URL)*
+- **Public Workflow Run Logs**: [View Daily Job Execution Logs](https://github.com/Personal-Source-SP/atlas-support-agent/actions)
 
 ## 5. Sanity Check Screenshot
 

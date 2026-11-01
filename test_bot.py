@@ -90,9 +90,9 @@ def main():
         sys.stdout.reconfigure(encoding="utf-8")
     load_dotenv()
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("API_KEY")
     if not api_key:
-        print("\n[ERROR] GEMINI_API_KEY is missing from environment.")
+        print("\n[ERROR] GEMINI_API_KEY / API_KEY is missing from environment.")
         print("Please copy .env.sample to .env and set your Gemini API key:")
         print("  cp .env.sample .env\n")
         sys.exit(1)

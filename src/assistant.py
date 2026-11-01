@@ -17,7 +17,7 @@ class OptiBotAssistant:
         vector_store: VectorStoreManager | None = None,
         api_key: str | None = None,
     ):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("API_KEY")
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
         self.vector_store = vector_store or VectorStoreManager(api_key=self.api_key)
 

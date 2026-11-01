@@ -10,9 +10,9 @@ from src.vector_store import VectorStoreManager
 
 def main():
     load_dotenv()
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("API_KEY")
     if not api_key:
-        print("[WARNING] GEMINI_API_KEY is not set. Embedding step will be skipped or mock-tested.")
+        print("[WARNING] GEMINI_API_KEY is not set. Embedding will be skipped or mock-tested.")
 
     print("=== Step 1: Ingesting Zendesk Articles (support.optisigns.com) ===")
     articles = fetch_zendesk_articles(min_count=30, docs_dir="docs")

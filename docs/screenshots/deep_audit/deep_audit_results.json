@@ -1,0 +1,56 @@
+{
+  "teams_and_roles": {
+    "add_team_verified": true,
+    "custom_roles_verified": true,
+    "manage_members": "Manage Members\nClose\nTeam: Default Team\nShow All Members\nAdd New User\nInvite Member\n\nNo available user.\n\nClose",
+    "move_to_team": {
+      "text": "Change Role\nClose\nMember: Account Admin\nChange role to\nAdmin\nCancel\nUpdate",
+      "options": []
+    }
+  },
+  "screens": {
+    "stats_and_quota": [
+      "Your trial expires in 14 days",
+      "Screens",
+      "Add Screen",
+      "Let's set up your first screen",
+      "You will need a device to run OptiSigns & Connect to your TV",
+      "Use your laptop as a screen",
+      "Step 2: Get Pairing Code & Add Screen",
+      "Launch OptiSigns on your device",
+      "Add Screen",
+      "Add Screen"
+    ],
+    "pair_screen_dialog": {
+      "text": "SCREEN\nAdd Screen\n\nEnter the 6-digit pairing code shown on your screen\n\nPair code *\nUse lowercase pairing code\n\nTo get pair code, install the OptiSigns app on your player (Win, Mac, Android, etc.)\n\nNo player yet? Install Windows, Mac app to try on your laptop.\n\nCancel\nPair",
+      "inputs": [
+        {
+          "placeholder": "Enter your code here",
+          "id": "pair-code",
+          "name": "",
+          "maxlength": 6,
+          "type": "text",
+          "label": null
+        }
+      ]
+    },
+    "new_folder": "New Folder\nClose\nAdvanced\nCancel\nSave"
+  },
+  "assets": {
+    "storage_stats": [
+      "Files/Assets",
+      "Upload Files",
+      "Files/Assets"
+    ],
+    "new_folder_modal": {
+      "text": "New Folder\nClose\nAdvanced\nCancel\nSave",
+      "inputs": [
+        {
+          "placeholder": "Folder name",
+          "name": "name",
+          "type": "text"
+        }
+      ]
+    }
+  }
+}

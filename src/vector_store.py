@@ -42,7 +42,7 @@ def chunk_text(
 class VectorStoreManager:
     def __init__(self, persist_dir: str = "chroma_db", api_key: str | None = None):
         self.persist_dir = persist_dir
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("API_KEY")
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
         self.chroma_client = chromadb.PersistentClient(path=self.persist_dir)
         self.collection = self.chroma_client.get_or_create_collection(

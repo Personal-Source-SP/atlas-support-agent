@@ -18,7 +18,6 @@ ENV/
 .env
 sync_state.db
 chroma_db/
-docs/
 
 # IDE
 .idea/
@@ -26,4 +25,8 @@ docs/
 
 # Assignment / Brief
 DE_BAI.md
+
+# Archives & Submissions
+*.zip
+submission/
 
