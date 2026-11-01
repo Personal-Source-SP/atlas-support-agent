@@ -35,18 +35,26 @@ jobs:
       - name: Build Docker Container
         run: docker build -t optibot-sync:latest .
 
-      - name: Prepare Report Directory
-        run: mkdir -p reports
-
-      - name: Run Daily Sync Container (Delta Scraper & Embedding)
+      - name: Run Daily Sync Container (Delta Scraper & Ingestion)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          docker run --rm \
-            -v ${{ github.workspace }}/reports:/app/reports \
-            -v ${{ github.workspace }}/sync_state.db:/app/sync_state.db \
-            -e GEMINI_API_KEY=$GEMINI_API_KEY \
-            optibot-sync:latest
+          # 1. Create container instance
+          docker create --name sync-runner -e GEMINI_API_KEY=$GEMINI_API_KEY optibot-sync:latest
+
+          # 2. Inject cached sync_state.db if it exists
+          if [ -f sync_state.db ] && [ -s sync_state.db ]; then
+            echo "[INFO] Restoring cached sync_state.db into container..."
+            docker cp sync_state.db sync-runner:/app/sync_state.db
+          fi
+
+          # 3. Start container and stream output
+          docker start -a sync-runner
+
+          # 4. Extract generated reports and updated state database
+          docker cp sync-runner:/app/reports ./reports
+          docker cp sync-runner:/app/sync_state.db ./sync_state.db
+          docker rm sync-runner
 
       - name: Render GitHub Actions Step Summary Report
         if: always()
