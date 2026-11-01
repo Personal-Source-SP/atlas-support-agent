@@ -1,7 +1,7 @@
-from datetime import UTC, datetime
 import json
 import os
 import sys
+from datetime import UTC, datetime
 
 from dotenv import load_dotenv
 
@@ -28,9 +28,9 @@ def generate_reports(report_data: dict, report_dir: str = "reports") -> None:
 
     md_content = f"""# 📊 OptiBot Daily Ingestion & Delta Sync Report
 
-- **Execution Timestamp**: `{report_data['timestamp']}`
+- **Execution Timestamp**: `{report_data["timestamp"]}`
 - **Source Endpoint**: `https://support.optisigns.com` (Zendesk API v2)
-- **Status**: **{report_data['status']}**
+- **Status**: **{report_data["status"]}**
 
 ## 📈 Summary Metrics
 
