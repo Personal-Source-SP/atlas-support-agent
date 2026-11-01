@@ -54,9 +54,30 @@ docker run --rm -e API_KEY=your_key optibot-sync
 - **Embeddings**: Google Gemini `text-embedding-004` (768 dimensions), stored in local persistent ChromaDB with Cosine distance indexing.
 - **Citations**: Source URLs are bound to chunk metadata and rendered verbatim in assistant responses.
 
-## 4. Daily Job & Logs
-- Automated via GitHub Actions scheduled workflow (`.github/workflows/daily-sync.yml`).
-- **Public Workflow Run Logs**: [View Daily Job Execution Logs](https://github.com/Personal-Source-SP/atlas-support-agent/actions)
+## 4. Daily Job, Ingestion Mechanism & Reports
+- **Automation Engine**: Automated via GitHub Actions scheduled workflow ([`.github/workflows/daily-sync.yml`](.github/workflows/daily-sync.yml)).
+- **Execution Schedule**: Runs daily at **00:00 UTC** (`0 0 * * *`) with manual trigger support (`workflow_dispatch`).
+- **4-Step Pipeline**:
+  1. **Re-scrape**: Polls Zendesk Help Center API (`support.optisigns.com`) for latest articles.
+  2. **Delta Detection**: Computes SHA-256 content hashes, comparing against local SQLite database (`sync_state.db`).
+  3. **Delta-Only Embedding**: Only `added` and `updated` articles are embedded into ChromaDB via Gemini API; unchanged articles are skipped.
+  4. **Reporting & Artifacts**: Generates machine-readable `reports/daily_sync_report.json` and human-readable `reports/daily_sync_report.md`, rendered into GitHub Actions `$GITHUB_STEP_SUMMARY` and uploaded as workflow artifacts.
+- **Live Workflow Runs & Logs**:
+  - 👉 [**All Workflow Runs History**](https://github.com/Personal-Source-SP/atlas-support-agent/actions)
+  - 👉 [**Direct Link to Latest Verified Run**](https://github.com/Personal-Source-SP/atlas-support-agent/actions/runs/41268930151)
+- **Sample Execution Report Output**:
+  ```text
+  === Step 1: Ingesting Zendesk Articles (support.optisigns.com) ===
+  Total articles fetched: 31
+  === Step 2: Checking Delta via SQLite ===
+  Delta Result: [Added: 0] | [Updated: 0] | [Skipped: 31]
+  === Step 3: Knowledge Base is up-to-date. Zero delta to embed. ===
+
+  [SUCCESS] Daily Sync Completed.
+  Summary: added=0, updated=0, skipped=31
+  Reports generated: reports/daily_sync_report.json, reports/daily_sync_report.md
+  ```
+
 
 ## 5. Sanity Check Screenshot
 

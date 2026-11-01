@@ -2,11 +2,12 @@ name: Daily Knowledge Base Sync
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Chạy 00:00 UTC mỗi ngày
-  workflow_dispatch:      # Cho phép kích hoạt thủ công từ GitHub UI
+    - cron: '0 0 * * *'  # Chạy tự động lúc 00:00 UTC mỗi ngày
+  workflow_dispatch:      # Kích hoạt thủ công từ GitHub UI
 
 jobs:
   sync:
+    name: Execute Daily Ingestion & Delta Sync
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -23,7 +24,7 @@ jobs:
           ruff check .
           ruff format --check .
 
-      - name: Cache Sync State Database
+      - name: Restore Sync State Cache
         uses: actions/cache@v4
         with:
           path: sync_state.db
@@ -31,11 +32,36 @@ jobs:
           restore-keys: |
             sync-db-
 
-      - name: Build Docker Image
+      - name: Build Docker Container
         run: docker build -t optibot-sync:latest .
 
-      - name: Run Daily Sync Container
+      - name: Prepare Report Directory
+        run: mkdir -p reports
+
+      - name: Run Daily Sync Container (Delta Scraper & Embedding)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: docker run --rm -e GEMINI_API_KEY=$GEMINI_API_KEY optibot-sync:latest
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/reports:/app/reports \
+            -v ${{ github.workspace }}/sync_state.db:/app/sync_state.db \
+            -e GEMINI_API_KEY=$GEMINI_API_KEY \
+            optibot-sync:latest
 
+      - name: Render GitHub Actions Step Summary Report
+        if: always()
+        run: |
+          if [ -f reports/daily_sync_report.md ]; then
+            cat reports/daily_sync_report.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Daily Sync Execution Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-sync-report-${{ github.run_number }}
+          path: |
+            reports/daily_sync_report.json
+            reports/daily_sync_report.md
+            sync_state.db
+          retention-days: 30
