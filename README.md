@@ -103,19 +103,10 @@ During retrieval, top-$k$ nearest neighbors pass their bound URLs to the Assista
   4. **Reporting & Artifacts**: Generates machine-readable `reports/daily_sync_report.json` and human-readable `reports/daily_sync_report.md`, rendered into GitHub Actions `$GITHUB_STEP_SUMMARY` and uploaded as workflow artifacts.
 - **Live Workflow Runs & Logs**:
   - 👉 [**All Workflow Runs History**](https://github.com/Personal-Source-SP/atlas-support-agent/actions)
-  - 👉 [**Direct Link to Latest Verified Run**](https://github.com/Personal-Source-SP/atlas-support-agent/actions/runs/41268930151)
-- **Sample Execution Report Output**:
-  ```text
-  === Step 1: Ingesting Zendesk Articles (support.optisigns.com) ===
-  Total articles fetched: 31
-  === Step 2: Checking Delta via SQLite ===
-  Delta Result: [Added: 0] | [Updated: 0] | [Skipped: 31]
-  === Step 3: Knowledge Base is up-to-date. Zero delta to embed. ===
+  - 👉 [**Direct Link to Latest Verified Run**](https://github.com/Personal-Source-SP/atlas-support-agent/actions/runs/41384588140)
+- **Runtime Step Summary Report**:
 
-  [SUCCESS] Daily Sync Completed.
-  Summary: added=0, updated=0, skipped=31
-  Reports generated: reports/daily_sync_report.json, reports/daily_sync_report.md
-  ```
+![OptiBot Daily Ingestion & Delta Sync Report](docs/daily_sync_report_sample.png)
 
 ## 5. Sanity Check Screenshot
 
