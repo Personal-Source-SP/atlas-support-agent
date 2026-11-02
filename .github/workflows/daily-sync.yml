@@ -52,6 +52,7 @@ jobs:
           docker start -a sync-runner
 
           # 4. Extract generated reports and updated state database
+          rm -rf ./reports
           docker cp sync-runner:/app/reports ./reports
           docker cp sync-runner:/app/sync_state.db ./sync_state.db
           docker rm sync-runner

@@ -18,6 +18,7 @@ ENV/
 .env
 sync_state.db
 chroma_db/
+reports/
 
 # IDE
 .idea/
